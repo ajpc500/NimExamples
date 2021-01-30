@@ -14,6 +14,211 @@ type
     TotalLength*: SIZE_T
     Attributes*: array[2, PS_ATTRIBUTE]
   PPS_ATTRIBUTE_LIST* = ptr PS_ATTRIBUTE_LIST
+  KNORMAL_ROUTINE* {.pure.} = object
+    NormalContext*: PVOID
+    SystemArgument1*: PVOID
+    SystemArgument2*: PVOID
+  PKNORMAL_ROUTINE* = ptr KNORMAL_ROUTINE
+
+proc NtQueueApcThread*(ThreadHandle: HANDLE, ApcRoutine: PKNORMAL_ROUTINE, ApcArgument1: PVOID, ApcArgument2: PVOID, ApcArgument3: PVOID): NTSTATUS {.asmNoStackFrame.} =
+    asm """
+	mov rax, gs:[0x60]                          
+NtQueueApcThread_Check_X_X_XXXX:               
+	cmp dword ptr [rax+0x118], 6
+	je  NtQueueApcThread_Check_6_X_XXXX
+	cmp dword ptr [rax+0x118], 10
+	je  NtQueueApcThread_Check_10_0_XXXX
+	jmp NtQueueApcThread_SystemCall_Unknown
+NtQueueApcThread_Check_6_X_XXXX:               
+	cmp dword ptr [rax+0x11c], 1
+	je  NtQueueApcThread_Check_6_1_XXXX
+	cmp dword ptr [rax+0x11c], 2
+	je  NtQueueApcThread_SystemCall_6_2_XXXX
+	cmp dword ptr [rax+0x11c], 3
+	je  NtQueueApcThread_SystemCall_6_3_XXXX
+	jmp NtQueueApcThread_SystemCall_Unknown
+NtQueueApcThread_Check_6_1_XXXX:               
+	cmp word ptr [rax+0x120], 7600
+	je  NtQueueApcThread_SystemCall_6_1_7600
+	cmp word ptr [rax+0x120], 7601
+	je  NtQueueApcThread_SystemCall_6_1_7601
+	jmp NtQueueApcThread_SystemCall_Unknown
+NtQueueApcThread_Check_10_0_XXXX:              
+	cmp word ptr [rax+0x120], 10240
+	je  NtQueueApcThread_SystemCall_10_0_10240
+	cmp word ptr [rax+0x120], 10586
+	je  NtQueueApcThread_SystemCall_10_0_10586
+	cmp word ptr [rax+0x120], 14393
+	je  NtQueueApcThread_SystemCall_10_0_14393
+	cmp word ptr [rax+0x120], 15063
+	je  NtQueueApcThread_SystemCall_10_0_15063
+	cmp word ptr [rax+0x120], 16299
+	je  NtQueueApcThread_SystemCall_10_0_16299
+	cmp word ptr [rax+0x120], 17134
+	je  NtQueueApcThread_SystemCall_10_0_17134
+	cmp word ptr [rax+0x120], 17763
+	je  NtQueueApcThread_SystemCall_10_0_17763
+	cmp word ptr [rax+0x120], 18362
+	je  NtQueueApcThread_SystemCall_10_0_18362
+	cmp word ptr [rax+0x120], 18363
+	je  NtQueueApcThread_SystemCall_10_0_18363
+	cmp word ptr [rax+0x120], 19041
+	je  NtQueueApcThread_SystemCall_10_0_19041
+	cmp word ptr [rax+0x120], 19042
+	je  NtQueueApcThread_SystemCall_10_0_19042
+	jmp NtQueueApcThread_SystemCall_Unknown
+NtQueueApcThread_SystemCall_6_1_7600:          
+	mov eax, 0x0042
+	jmp NtQueueApcThread_Epilogue
+NtQueueApcThread_SystemCall_6_1_7601:          
+	mov eax, 0x0042
+	jmp NtQueueApcThread_Epilogue
+NtQueueApcThread_SystemCall_6_2_XXXX:          
+	mov eax, 0x0043
+	jmp NtQueueApcThread_Epilogue
+NtQueueApcThread_SystemCall_6_3_XXXX:          
+	mov eax, 0x0044
+	jmp NtQueueApcThread_Epilogue
+NtQueueApcThread_SystemCall_10_0_10240:        
+	mov eax, 0x0045
+	jmp NtQueueApcThread_Epilogue
+NtQueueApcThread_SystemCall_10_0_10586:        
+	mov eax, 0x0045
+	jmp NtQueueApcThread_Epilogue
+NtQueueApcThread_SystemCall_10_0_14393:        
+	mov eax, 0x0045
+	jmp NtQueueApcThread_Epilogue
+NtQueueApcThread_SystemCall_10_0_15063:        
+	mov eax, 0x0045
+	jmp NtQueueApcThread_Epilogue
+NtQueueApcThread_SystemCall_10_0_16299:        
+	mov eax, 0x0045
+	jmp NtQueueApcThread_Epilogue
+NtQueueApcThread_SystemCall_10_0_17134:        
+	mov eax, 0x0045
+	jmp NtQueueApcThread_Epilogue
+NtQueueApcThread_SystemCall_10_0_17763:        
+	mov eax, 0x0045
+	jmp NtQueueApcThread_Epilogue
+NtQueueApcThread_SystemCall_10_0_18362:        
+	mov eax, 0x0045
+	jmp NtQueueApcThread_Epilogue
+NtQueueApcThread_SystemCall_10_0_18363:        
+	mov eax, 0x0045
+	jmp NtQueueApcThread_Epilogue
+NtQueueApcThread_SystemCall_10_0_19041:        
+	mov eax, 0x0045
+	jmp NtQueueApcThread_Epilogue
+NtQueueApcThread_SystemCall_10_0_19042:        
+	mov eax, 0x0045
+	jmp NtQueueApcThread_Epilogue
+NtQueueApcThread_SystemCall_Unknown:           
+	ret
+NtQueueApcThread_Epilogue:
+	mov r10, rcx
+	syscall
+	ret
+    """
+
+proc NtResumeThread*(ThreadHandle: HANDLE, PreviousSuspendCount: PULONG): NTSTATUS {.asmNoStackFrame.} =
+    asm """
+	mov rax, gs:[0x60]                        
+NtResumeThread_Check_X_X_XXXX:               
+	cmp dword ptr [rax+0x118], 6
+	je  NtResumeThread_Check_6_X_XXXX
+	cmp dword ptr [rax+0x118], 10
+	je  NtResumeThread_Check_10_0_XXXX
+	jmp NtResumeThread_SystemCall_Unknown
+NtResumeThread_Check_6_X_XXXX:               
+	cmp dword ptr [rax+0x11c], 1
+	je  NtResumeThread_Check_6_1_XXXX
+	cmp dword ptr [rax+0x11c], 2
+	je  NtResumeThread_SystemCall_6_2_XXXX
+	cmp dword ptr [rax+0x11c], 3
+	je  NtResumeThread_SystemCall_6_3_XXXX
+	jmp NtResumeThread_SystemCall_Unknown
+NtResumeThread_Check_6_1_XXXX:               
+	cmp word ptr [rax+0x120], 7600
+	je  NtResumeThread_SystemCall_6_1_7600
+	cmp word ptr [rax+0x120], 7601
+	je  NtResumeThread_SystemCall_6_1_7601
+	jmp NtResumeThread_SystemCall_Unknown
+NtResumeThread_Check_10_0_XXXX:              
+	cmp word ptr [rax+0x120], 10240
+	je  NtResumeThread_SystemCall_10_0_10240
+	cmp word ptr [rax+0x120], 10586
+	je  NtResumeThread_SystemCall_10_0_10586
+	cmp word ptr [rax+0x120], 14393
+	je  NtResumeThread_SystemCall_10_0_14393
+	cmp word ptr [rax+0x120], 15063
+	je  NtResumeThread_SystemCall_10_0_15063
+	cmp word ptr [rax+0x120], 16299
+	je  NtResumeThread_SystemCall_10_0_16299
+	cmp word ptr [rax+0x120], 17134
+	je  NtResumeThread_SystemCall_10_0_17134
+	cmp word ptr [rax+0x120], 17763
+	je  NtResumeThread_SystemCall_10_0_17763
+	cmp word ptr [rax+0x120], 18362
+	je  NtResumeThread_SystemCall_10_0_18362
+	cmp word ptr [rax+0x120], 18363
+	je  NtResumeThread_SystemCall_10_0_18363
+	cmp word ptr [rax+0x120], 19041
+	je  NtResumeThread_SystemCall_10_0_19041
+	cmp word ptr [rax+0x120], 19042
+	je  NtResumeThread_SystemCall_10_0_19042
+	jmp NtResumeThread_SystemCall_Unknown
+NtResumeThread_SystemCall_6_1_7600:          
+	mov eax, 0x004f
+	jmp NtResumeThread_Epilogue
+NtResumeThread_SystemCall_6_1_7601:          
+	mov eax, 0x004f
+	jmp NtResumeThread_Epilogue
+NtResumeThread_SystemCall_6_2_XXXX:          
+	mov eax, 0x0050
+	jmp NtResumeThread_Epilogue
+NtResumeThread_SystemCall_6_3_XXXX:          
+	mov eax, 0x0051
+	jmp NtResumeThread_Epilogue
+NtResumeThread_SystemCall_10_0_10240:        
+	mov eax, 0x0052
+	jmp NtResumeThread_Epilogue
+NtResumeThread_SystemCall_10_0_10586:        
+	mov eax, 0x0052
+	jmp NtResumeThread_Epilogue
+NtResumeThread_SystemCall_10_0_14393:        
+	mov eax, 0x0052
+	jmp NtResumeThread_Epilogue
+NtResumeThread_SystemCall_10_0_15063:        
+	mov eax, 0x0052
+	jmp NtResumeThread_Epilogue
+NtResumeThread_SystemCall_10_0_16299:        
+	mov eax, 0x0052
+	jmp NtResumeThread_Epilogue
+NtResumeThread_SystemCall_10_0_17134:        
+	mov eax, 0x0052
+	jmp NtResumeThread_Epilogue
+NtResumeThread_SystemCall_10_0_17763:        
+	mov eax, 0x0052
+	jmp NtResumeThread_Epilogue
+NtResumeThread_SystemCall_10_0_18362:        
+	mov eax, 0x0052
+	jmp NtResumeThread_Epilogue
+NtResumeThread_SystemCall_10_0_18363:        
+	mov eax, 0x0052
+	jmp NtResumeThread_Epilogue
+NtResumeThread_SystemCall_10_0_19041:        
+	mov eax, 0x0052
+	jmp NtResumeThread_Epilogue
+NtResumeThread_SystemCall_10_0_19042:        
+	mov eax, 0x0052
+	jmp NtResumeThread_Epilogue
+NtResumeThread_SystemCall_Unknown:           
+	ret
+NtResumeThread_Epilogue:
+	mov r10, rcx
+	syscall
+	ret
+    """
 
 
 proc NtAllocateVirtualMemory*(ProcessHandle: HANDLE, BaseAddress: PVOID, ZeroBits: ULONG, RegionSize: PSIZE_T, AllocationType: ULONG, Protect: ULONG): NTSTATUS {.asmNoStackFrame.} =
